@@ -1,10 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
+from urlparse import urlparse
 
 
 def get_page(url):
     try:
-        r = requests.get(url)
+        r = requests.get(url, verify=False)
     except:
         print "Unable to retrieve URL: %s" % (url)
         raise
@@ -13,18 +14,21 @@ def get_page(url):
     return soup
 
 
-def get_asset_sources(soup, elem):
+def get_js_sources(soup):
     src_lst = []
-    for asset in soup.find_all(elem):
-        try:
-            url = urlparse(asset.get('src'))
-        except:
-            print asset
-            continue
-        if url.netloc:
-            dom = url.scheme + '://' + url.netloc
+    inline_js = False
+    for asset in soup.find_all('script'):
+        js_src = asset.get('src')
+        if js_src:
+            url = urlparse(js_src)
+            if url.netloc:
+                dom = url.scheme + '://' + url.netloc
+            elif not url.netloc and url.path:
+                dom = "HOME"
             src_lst.append(dom)
-    return set(src_lst)
+        else:
+            inline_js = True
+    return set(src_lst), inline_js
 
 
 def get_images(page):

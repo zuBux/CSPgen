@@ -3,7 +3,7 @@ import logging
 csp_headers = {}
 
 
-def gen_scripts_pol(conf):
+def scripts_pol(conf):
     src_pol = []
     try:
         allow = conf['allow']
@@ -13,17 +13,46 @@ def gen_scripts_pol(conf):
     if _has_all_none(conf):
         logging.warning("'%s' option detected, all other script options\
         will be ignored", allow)
-        src_pol.append(_gen_src_policy(allow))
+        src_pol.append(_src_policy(allow))
         csp_headers['script-src'] = src_pol
         return csp_headers
     else:
         for option in conf['options']:
-            src_pol.append(_gen_src_policy(option))
+            src_pol.append(_src_policy(option))
     if 'hosts' in conf:
         for host in conf['hosts']:
             src_pol.append(host)
     csp_headers['script-src'] = src_pol
     return csp_headers
+
+
+def print_policy():
+    opts = ' '.join(csp_headers['script-src'])
+    print "Content-Security-Policy: %s" % opts
+    return
+
+
+def policy_from_crawl(prof):
+    conf = {}
+    conf['scripts'] = {}
+    opts = []
+    hosts = []
+    if not prof['js_sources'] and not prof['inline']:
+        conf['scripts']['allow'] = 'none'
+        return conf
+    if prof['js_sources']:
+        conf['scripts']['allow'] = 'custom'
+        for source in prof['js_sources']:
+            if source == 'HOME':
+                opts.append('self')
+            else:
+                hosts.append(source)
+    if prof['inline']:
+        opts.append('inline')
+    conf['scripts']['options'] = opts
+    conf['scripts']['hosts'] = hosts
+
+    return conf
 
 
 # has_all_none checks if 'allow' key has value 'all' or 'none'
@@ -35,7 +64,7 @@ def _has_all_none(conf):
 
 
 # translates CSPgen keyword to a corresponding CSP value
-def _gen_src_policy(val):
+def _src_policy(val):
     if val == 'none':
         return "'none'"
     elif val == 'all':
@@ -51,9 +80,3 @@ def _gen_src_policy(val):
     else:
         logging.warning("Unknown option: %s", val)
         return
-
-
-def print_policy():
-    opts = ' '.join(csp_headers['script-src'])
-    print "Content-Security-Policy: %s" % opts
-    return
