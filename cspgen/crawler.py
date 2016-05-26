@@ -19,7 +19,7 @@ def get_asset_sources(soup, elem):
         try:
             url = urlparse(asset.get('src'))
         except:
-            print "Unable to parse element"
+            print asset
             continue
         if url.netloc:
             dom = url.scheme + '://' + url.netloc

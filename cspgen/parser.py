@@ -1,5 +1,6 @@
 import toml
 
+
 def parse_toml(tml_profile):
     with open(tml_profile) as conf:
         config = toml.loads(conf.read())
