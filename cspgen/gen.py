@@ -100,7 +100,7 @@ def add_policy(key, pol):
     elif key == 'scripts':
         csp_headers['script-src'] = pol
     elif key == 'frame':
-        csp_headers['frame-src'] = pol
+        csp_headers['child-src'] = pol
     elif key == 'connect':
         csp_headers['connect-src'] = pol
     else:
