@@ -15,16 +15,17 @@ def main(args):
         pol = gen.policy_from_crawl(profile)
         if args.output:
             gen.write_toml(args.output, pol)
+
         else:
             print pol
     if args.conf:
         try:
             conf = parser.parse_toml(args.conf)
         except Exception, e:
-            logging.error("Unable to open/read file %s: %s", fname,str(e))
+            logging.error("Unable to open/read file %s: %s", fname, str(e))
             return
         if "scripts" in conf:
-            scrpts = parser.get_scripts_pol(conf)
+            scrpts = parser.read_scripts_pol(conf)
             script_pol = gen.scripts_pol(scrpts)
             gen.print_policy()
     return
