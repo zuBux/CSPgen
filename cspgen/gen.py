@@ -1,4 +1,5 @@
 import logging
+import toml
 
 csp_headers = {}
 
@@ -37,6 +38,7 @@ def policy_from_crawl(prof):
     conf['scripts'] = {}
     opts = []
     hosts = []
+
     if not prof['js_sources'] and not prof['inline']:
         conf['scripts']['allow'] = 'none'
         return conf
@@ -52,8 +54,12 @@ def policy_from_crawl(prof):
     conf['scripts']['options'] = opts
     conf['scripts']['hosts'] = hosts
 
-    return conf
+    return toml.dumps(conf)
 
+def write_toml(f_out, conf):
+    with open(f_out,'w+') as outfile:
+        outfile.write(conf)
+    return
 
 # has_all_none checks if 'allow' key has value 'all' or 'none'
 def _has_all_none(conf):
