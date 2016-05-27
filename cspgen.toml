@@ -1,5 +1,29 @@
-[scripts]
+#The default-src is the default policy for loading content such as JavaScript,
+#Images, CSS, Font's, AJAX requests, Frames, HTML5 Media.
+[default]
+allow = "custom"
+options = []
+hosts = []
 
+
+#Defines valid sources of JavaScript.
+[scripts]
 allow = "custom"                        # Available options: none, all, custom
 options = ["self", "inline", "eval"]    # Available options: self, inline, eval, data
 hosts = ["https://google.com"]
+
+
+#Defines valid sources for web wokers and nested browsing contexts loaded
+#using elements such as <frame> and <iframe>
+[frame]
+allow = "custom"                        # Available options: none, all, custom
+options = ["self"]                      # Available options: self
+hosts = []
+
+
+#Applies to XMLHttpRequest (AJAX), WebSocket or EventSource.
+#If not allowed the browser emulates a 400 HTTP status code.
+[connect]
+allow = "none"                        # Available options: none, all, custom
+options = ["data"]                    # Available options: self
+hosts = []

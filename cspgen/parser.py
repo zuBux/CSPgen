@@ -7,6 +7,6 @@ def parse_toml(tml_profile):
     return config
 
 
-# get_scripts_pol returns the scripts policy from the conf dict
-def read_scripts_pol(conf):
-    return conf['scripts']
+# read_policy reads the resource policy (js,css,img etc.) from the conf dict
+def read_policy(conf, cat):
+    return conf[cat]

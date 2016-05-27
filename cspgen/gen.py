@@ -4,32 +4,38 @@ import toml
 csp_headers = {}
 
 
-def scripts_pol(conf):
+# generates CSP header for a given resource type
+def gen_resource_policy(res):
     src_pol = []
     try:
-        allow = conf['allow']
+        allow = res['allow']
     except KeyError:
-        logging.error("no script-src policies could be defined")
-
-    if _has_all_none(conf):
-        logging.warning("'%s' option detected, all other script options\
+        logging.error("missing 'allow' key from policy, cannot procceed")
+        return
+    if _has_all_none(res):
+        logging.warning("'%s' option detected, all other options\
         will be ignored", allow)
-        src_pol.append(_src_policy(allow))
-        csp_headers['script-src'] = src_pol
-        return csp_headers
+        src_pol.append(_translate_keyword(allow))
+        return src_pol
     else:
-        for option in conf['options']:
-            src_pol.append(_src_policy(option))
-    if 'hosts' in conf:
-        for host in conf['hosts']:
+        for option in res['options']:
+            src_pol.append(_translate_keyword(option))
+    if 'hosts' in res:
+        for host in res['hosts']:
             src_pol.append(host)
-    csp_headers['script-src'] = src_pol
-    return csp_headers
+    return src_pol
 
 
 def print_policy():
-    opts = ' '.join(csp_headers['script-src'])
+    opts = ""
+    for k, v in csp_headers.iteritems():
+        if csp_headers[k]:
+            opts = opts + k + ' '
+            opts = opts + ' '.join(csp_headers[k])
+            opts = opts + '; '
+    print "\nPlease review the CSP header before using it on production systems\n\n"
     print "Content-Security-Policy: %s" % opts
+    print "\nFor more information, visit http://content-security-policy.com/\n"
     return
 
 
@@ -70,7 +76,7 @@ def _has_all_none(conf):
 
 
 # translates CSPgen keyword to a corresponding CSP value
-def _src_policy(val):
+def _translate_keyword(val):
     if val == 'none':
         return "'none'"
     elif val == 'all':
@@ -86,3 +92,17 @@ def _src_policy(val):
     else:
         logging.warning("Unknown option: %s", val)
         return
+
+
+def add_policy(key, pol):
+    if key == 'default':
+        csp_headers['default-src'] = pol
+    elif key == 'scripts':
+        csp_headers['script-src'] = pol
+    elif key == 'frame':
+        csp_headers['frame-src'] = pol
+    elif key == 'connect':
+        csp_headers['connect-src'] = pol
+    else:
+        logging.warning("policy cannot be added for resource: %s", key)
+    return
