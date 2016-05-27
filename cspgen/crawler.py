@@ -21,8 +21,10 @@ def get_js_sources(soup):
         js_src = asset.get('src')
         if js_src:
             url = urlparse(js_src)
-            if url.netloc:
+            if url.netloc and url.scheme:
                 dom = url.scheme + '://' + url.netloc
+            elif url.netloc:
+                dom = url.netloc
             elif not url.netloc and url.path:
                 dom = "HOME"
             src_lst.append(dom)
