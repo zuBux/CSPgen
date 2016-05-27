@@ -33,8 +33,10 @@ def print_policy():
             opts = opts + k + ' '
             opts = opts + ' '.join(csp_headers[k])
             opts = opts + '; '
-    print "\nPlease review the CSP header before using it on production systems\n\n"
-    print "Content-Security-Policy: %s" % opts
+    print "\nPlease review the CSP header before using it on production systems\n"
+    print "Content-Security-Policy: %s\n" % opts
+    print "\nTo test your CSP without deploying it use:\n"
+    print "Content-Security-Policy-Report-Only: %s\n" % opts
     print "\nFor more information, visit http://content-security-policy.com/\n"
     return
 
