@@ -7,22 +7,22 @@ csp_headers = {}
 # generates CSP header for a given resource type
 def gen_resource_policy(res):
     src_pol = []
-    try:
-        allow = res['allow']
-    except KeyError:
-        logging.error("missing 'allow' key from policy, cannot procceed")
-        return
-    if _has_all_none(res):
-        logging.warning("'%s' option detected, all other options\
-        will be ignored", allow)
-        src_pol.append(_translate_keyword(allow))
+    if (len(res['options']) | len(res['hosts'])) == 0:
+        logging.info("no options and hosts detected, switching to 'none'")
+        src_pol.append("'none'")
         return src_pol
     else:
         for option in res['options']:
             src_pol.append(_translate_keyword(option))
     if 'hosts' in res:
-        for host in res['hosts']:
-            src_pol.append(host)
+        if '*' in res['hosts']:
+            if 'self' in src_pol:
+                src_pol.remove('self')
+            src_pol.append('*')
+            return src_pol
+        else:
+            for host in res['hosts']:
+                src_pol.append(host)
     return src_pol
 
 
@@ -79,11 +79,7 @@ def _has_all_none(conf):
 
 # translates CSPgen keyword to a corresponding CSP value
 def _translate_keyword(val):
-    if val == 'none':
-        return "'none'"
-    elif val == 'all':
-        return "*"
-    elif val == 'inline':
+    if val == 'inline':
         return "'unsafe-inline'"
     elif val == 'eval':
         return "'unsafe-eval'"
