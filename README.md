@@ -5,13 +5,13 @@ CSPgen is a Content Security Policy ([link](http://content-security-policy.com/)
 
 **CSPgen** has two functionalities:
 
-- Generates a Content Security Policy headers from a TOML profile
+- Generates Content Security Policy headers from a TOML profile
 - Crawls a URL and attempts to automatically generate a Content Security Policy
+
+## CSP from URL crawling
+
+`python cspgen.py -u <URL> -o <toml>`
 
 ## CSP from TOML profile
 
 `python cspgen.py <file>`
-
-## CSP from URL crawling
-
-`python cspgen.py -u <URL>`
