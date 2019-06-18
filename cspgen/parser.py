@@ -23,7 +23,6 @@ def parse_toml(tml_profile):
 
 
 def parse_yaml(path):
-    print("yaml parser")
     try:
         with open(path, "r") as file:
             config = yaml.load(file.read(), Loader=yaml.FullLoader)

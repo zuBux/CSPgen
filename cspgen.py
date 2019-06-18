@@ -27,7 +27,10 @@ def main(args):
             return
         for k in list(conf.keys()):
             cat = parser.read_policy(conf, k)
-            policy = gen.gen_resource_policy(cat)
+            if type(cat) is list:
+                policy = cat
+            else:
+                policy = gen.gen_resource_policy(cat)
             gen.add_policy(k, policy)
         gen.print_policy()
     return

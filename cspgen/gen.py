@@ -1,5 +1,7 @@
 import logging
 import toml
+import os
+import shlex
 
 csp_headers = {}
 
@@ -7,6 +9,14 @@ csp_headers = {}
 # generates CSP header for a given resource type
 def gen_resource_policy(res):
     src_pol = []
+    if type(res) is list:
+        return src_pol
+    if not res.get("options", None):
+        src_pol.append("'none'")
+        return src_pol
+    if not res.get("hosts", None):
+        src_pol.append("'none'")
+        return src_pol
     if (len(res["options"]) | len(res["hosts"])) == 0:
         logging.info("no options and hosts detected, switching to 'none'")
         src_pol.append("'none'")
@@ -33,11 +43,18 @@ def print_policy():
             opts = opts + k + " "
             opts = opts + " ".join(csp_headers[k])
             opts = opts + "; "
+    csp = "Content-Security-Policy: %s" % opts
     print("\nPlease review the CSP header before using it on production systems\n")
-    print("Content-Security-Policy: %s\n" % opts)
+    print(csp)
     print("\nTo test your CSP without deploying it use:\n")
     print("Content-Security-Policy-Report-Only: %s\n" % opts)
     print("\nFor more information, visit http://content-security-policy.com/\n")
+
+    try:
+        os.system("echo %s | pbcopy" % shlex.quote(csp))
+    except:
+        logging.info("Maybe we cannot copy to paste")
+        pass
     return
 
 
@@ -95,14 +112,25 @@ def _translate_keyword(val):
 
 
 def add_policy(key, pol):
-    if key == "default":
-        csp_headers["default-src"] = pol
-    elif key == "scripts":
-        csp_headers["script-src"] = pol
-    elif key == "frame":
-        csp_headers["child-src"] = pol
-    elif key == "connect":
-        csp_headers["connect-src"] = pol
+    if key in (
+        'child'
+        'connect'
+        'default'
+        'font'
+        'frame'
+        'img'
+        'media'
+        'object'
+        'prefetch'
+        'script'
+        'style'
+        'worker'):
+        header = "%s-src" % key
+        csp_headers[header] = pol
+    elif key in (
+        'report-uri'
+    ):
+        csp_headers[key] = pol
     else:
         logging.warning("policy cannot be added for resource: %s", key)
     return
