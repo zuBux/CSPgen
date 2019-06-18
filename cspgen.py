@@ -16,14 +16,14 @@ def main(args):
         if args.output:
             gen.write_toml(args.output, pol)
         else:
-            print pol
+            print(pol)
     if args.conf:
         try:
             conf = parser.parse_toml(args.conf)
-        except Exception, e:
+        except Exception as e:
             logging.error("Unable to open/read file %s: %s", fname, str(e))
             return
-        for k in conf.keys():
+        for k in list(conf.keys()):
             cat = parser.read_policy(conf, k)
             policy = gen.gen_resource_policy(cat)
             gen.add_policy(k, policy)

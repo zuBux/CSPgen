@@ -1,13 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 
 def get_page(url):
     try:
         r = requests.get(url, verify=False)
     except:
-        print "Unable to retrieve URL: %s" % (url)
+        print("Unable to retrieve URL: %s" % (url))
         raise
     page = r.text
     soup = BeautifulSoup(page, 'html.parser')
