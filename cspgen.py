@@ -12,7 +12,7 @@ def main(args):
         profile = {}
         url = args.url
         page = crawler.get_page(url)
-        profile['js_sources'], profile['inline'] = crawler.get_js_sources(page)
+        profile["js_sources"], profile["inline"] = crawler.get_js_sources(page)
         pol = gen.policy_from_crawl(profile)
         if args.output:
             gen.write_toml(args.output, pol)
@@ -33,9 +33,11 @@ def main(args):
     return
 
 
-if __name__ == '__main__':
-    argparser = argparse.ArgumentParser(description='Content Security Policy generator')
-    argparser.add_argument('-c', "--conf",  nargs='?', type=str, help='TOML configuration file')
+if __name__ == "__main__":
+    argparser = argparse.ArgumentParser(description="Content Security Policy generator")
+    argparser.add_argument(
+        "-c", "--conf", nargs="?", type=str, help="TOML configuration file"
+    )
     argparser.add_argument("-u", "--url", help="URL to crawl")
     argparser.add_argument("-o", "--output", help="File to write CSP")
     args = argparser.parse_args()
