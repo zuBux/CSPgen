@@ -1,0 +1,19 @@
+---
+default:
+  options: []
+  hosts: []
+scripts:
+  options:
+  - self
+  - inline
+  - eval
+  hosts:
+  - https://google.com
+frame:
+  options:
+  - self
+  hosts: []
+connect:
+  options:
+  - data
+  hosts: []
